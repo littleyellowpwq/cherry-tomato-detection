@@ -1,0 +1,79 @@
+换源:
+mim install mmdet -f https://github.com.cnpmjs.org/open-mmlab/mmsegmentation.git mmsegmentation
+
+oringin:
+CUDA_VISIBLE_DEVICES=0 bash ./dist_train.sh \
+configs/dino/dino-4scale_r50_8xb2_12e_coco.py 1 \
+ --work-dir work_dirs/dino_1x_coco/$(date +'%Y%m%d_%H%M%S') \
+ --cfg-options model.pretrained=../model_ckpt/fasternet_t0-epoch=281-val_acc1=71.9180.pth
+数据增强：
+python  mmdetection/tools/analysis_tools/browse_dataset.py \
+configs/vfnet/vfnet_r50_fpn_1x_coco.py
+
+测试图片展示:
+python mmdetection/tools/test.py configs/dino/dino_4scale_r50_8xb2_12e_coco.py \
+ckpts/dino-4scale_r50_8xb2-12e_coco.pth --show
+
+python mmdetection/tools/test.py configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
+work_dirs/rtmdet_s_8xb32-300e_coco/epoch_160.pth --show
+
+train:
+python mmdetection/tools/train.py configs/dino/dino_r50_mycoco.py
+python mmdetection/tools/train.py configs/detr/detr_r50_8xb2-150e_coco.py
+python mmdetection/tools/train.py configs/conditional_detr/conditional-detr_r50_8xb2-50e_coco.py load_from=ckpts/detr_r50_8xb2-150e_coco.pth
+python mmdetection/tools/train.py configs/conditional_detr/conditional-detr_r50_8xb2-50e_coco.py \
+--resume ckpts/detr_r50_8xb2-150e_coco.pth
+python mmdetection/tools/train.py configs/ddq/ddq-detr-4scale_r50_8xb2-12e_coco.py
+python mmdetection/tools/train.py configs/dab_detr/dab-detr_r50_8xb2-50e_coco.py
+python mmdetection/tools/train.py configs/glip/glip_atss_swin-t_a_fpn_dyhead_16xb2_ms-2x_funtune_coco.py
+python mmdetection/tools/train.py configs/deformable_detr/deformable-detr_r50_16xb2-50e_coco.py
+python mmdetection/tools/train.py configs/rtmdet/rtmdet_s_8xb32-300e_coco.py *
+python mmdetection/tools/train.py configs/rtmdet/rtmdet_m_8xb32-300e_coco.py *
+python mmdetection/tools/train.py configs/ddod/ddod_r50_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/tood/tood_r50_fpn_anchor-based_1x_coco.py
+python mmdetection/tools/train.py configs/tood/tood_r50_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/tood/tood_r50_fpn_ms-2x_coco.py *
+python mmdetection/tools/train.py configs/efficientnet/retinanet_effb3_fpn_8xb4-crop896-1x_coco.py
+python mmdetection/tools/train.py configs/pvt/retinanet_pvtv2-b1_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/sparse_rcnn/sparse-rcnn_r50_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/sparse_rcnn/sparse-rcnn_r50_fpn_ms-480-800-3x_coco.py
+python mmdetection/tools/train.py configs/vfnet/vfnet_r50_fpn_1x_coco.py *
+python mmdetection/tools/train.py configs/paa/paa_r50_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/yolox/yolox_s_8xb8-300e_coco.py
+python mmdetection/tools/train.py configs/yolo/yolov3_d53_8xb8-ms-608-273e_coco.py
+python mmdetection/tools/train.py configs/yolof/yolof_r50-c5_8xb8-1x_coco.py
+
+python mmdetection/tools/train.py configs/cascade_rcnn/cascade-mask-rcnn_r50_fpn_1x_coco.py
+python mmdetection/tools/train.py configs/cascade_rcnn/cascade-rcnn_r50_fpn_1x_coco.py
+python mmyolo/tools/train.py mmyolo/configs/yolov8/yolov8_s_syncbn_fast_8xb16-500e_coco.py
+继续训练：
+python mmdetection/tools/train.py configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
+--resume work_dirs/rtmdet_s_8xb32-300e_coco/epoch_1.pth \
+
+参数量:
+python mmdetection/tools/analysis_tools/get_flops.py work_dirs/ddq-detr-4scale_r50_8xb2-12e_coco/ddq-detr-4scale_r50_8xb2-12e_coco.py
+
+ython mmdetection/tools/analysis_tools/get_flops.py  \
+mmdetection/projects/CO-DETR/configs/codino/co_dino_5scale_r50_lsj_8xb2_1x_coco.py
+python mmdetection/tools/analysis_tools/get_flops.py  \
+configs/ddq/ddq-detr-4scale_r50_8xb2-12e_coco.py
+python mmdetection/tools/analysis_tools/get_flops.py  \
+configs/detr/detr_r50_8xb2-150e_coco.py
+
+FPS：
+python mmdetection/tools/analysis_tools/benchmark.py configs/rtmdet/rtmdet_s_8xb32-300e_coco.py \
+work_dirs/rtmdet_s_8xb32-300e_coco/epoch_274.pth --launcher pytorch
+
+python -m torch.distributed.launch --nproc_per_node=1 --master_port=29500 --use_env \
+mmdetection/tools/analysis_tools/benchmark.py \
+       configs/dino/dino_r50_mycoco.py \
+       work_dirs/dino_r50_mycoco/epoch_12.pth \
+       --launcher pytorch \
+
+python mmdetection/tools/analysis_tools/benchmark.py \
+       configs/dino/dino_r50_mycoco.py \
+       work_dirs/dino_r50_mycoco/epoch_12.pth \
+       --launcher pytorch --fuse-conv-bn
+
+
+

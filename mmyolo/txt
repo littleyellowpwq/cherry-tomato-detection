@@ -1,0 +1,11 @@
+python tools/analysis_tools/benchmark.py        work_dirs/rtmdet_s_syncbn_fast_8xb32-300e_coco/rtmdet_s_syncbn_fast_8xb32-300e_coco.py        work_dirs/rtmdet_s_syncbn_fast_8xb32-300e_coco/epoch_500.pth --fuse-conv-bn
+
+python tools/analysis_tools/benchmark.py        work_dirs/rtmdet_m_syncbn_fast_8xb32-300e_coco/rtmdet_m_syncbn_fast_8xb32-300e_coco.py        work_dirs/rtmdet_m_syncbn_fast_8xb32-300e_coco/epoch_10.pth --fuse-conv-bn
+
+python tools/test.py work_dirs/yolov8_m_syncbn_fast_8xb16-500e_coco/20231106_220727/vis_data/config.py work_dirs/yolov8_m_syncbn_fast_8xb16-500e_coco/epoch_50.pth --show-dir output
+
+python tools/test.py configs/yolov8/yolov8_m_syncbn_fast_8xb16-500e_coco.py work_dirs/yolov8_m_syncbn_fast_8xb16-500e_coco/epoch_50.pth --show-dir output
+
+ 
+
+
